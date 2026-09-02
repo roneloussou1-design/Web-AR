@@ -2,31 +2,63 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>TP01 WebAR - Exercice 2</title>
-  <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.5/aframe/build/aframe-ar.js"></script>
+  <title>TP01 WebAR - Exercice 1</title>
+  <script src="https://cdn.jsdelivr.net/npm/aframe@1.5.0/dist/aframe-master.min.js"></script>
+  <script>
+    // Petit composant custom qui oriente l'entite vers un point donne
+    AFRAME.registerComponent('look-at-point', {
+      schema: { type: 'vec3', default: {x: 0, y: 0, z: 0} },
+      init: function () {
+        this.el.object3D.lookAt(this.data.x, this.data.y, this.data.z);
+      }
+    });
+  </script>
 </head>
-<body style="margin: 0; overflow: hidden;">
+<body>
+  <a-scene background="color: #ECECEC">
 
-  <a-scene
-    embedded
-    arjs="sourceType: webcam; debugUIEnabled: false;"
-    vr-mode-ui="enabled: false">
+    <!-- Plan de base -->
+    <a-plane
+      position="0 0 0"
+      rotation="-90 0 0"
+      width="20"
+      height="20"
+      color="#7BC8A4">
+    </a-plane>
 
-    <a-marker preset="hiro">
-      <!-- Boite semi-transparente qui tourne automatiquement -->
-      <a-box
-        position="0 0.5 0"
-        color="#3498DB"
-        opacity="0.6"
-        transparent="true"
-        animation="property: rotation; to: 0 360 0; loop: true; dur: 4000; easing: linear">
-      </a-box>
-    </a-marker>
+    <!-- Boite rouge -->
+    <a-box
+      position="-3 2 -3"
+      color="#E74C3C"
+      width="1.5" height="1.5" depth="1.5">
+    </a-box>
 
-    <a-entity camera></a-entity>
+    <!-- Boite verte -->
+    <a-box
+      position="0 2 0"
+      color="#2ECC71"
+      width="1.5" height="1.5" depth="1.5">
+    </a-box>
+
+    <!-- Boite bleue -->
+    <a-box
+      position="3 2 3"
+      color="#3498DB"
+      width="1.5" height="1.5" depth="1.5">
+    </a-box>
+
+    <!-- Lumieres pour bien voir les couleurs -->
+    <a-light type="ambient" color="#FFFFFF" intensity="0.6"></a-light>
+    <a-light type="directional" color="#FFFFFF" intensity="0.8" position="2 4 2"></a-light>
+
+    <!-- Camera : hauteur=10, distance horizontale=15, orientee vers le centre -->
+    <a-entity
+      position="10.6 10 10.6"
+      camera
+      look-at-point="0 0 0"
+      wasd-controls>
+    </a-entity>
 
   </a-scene>
-
 </body>
 </html>
