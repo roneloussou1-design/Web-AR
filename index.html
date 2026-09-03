@@ -96,6 +96,18 @@
         </a-box>
       </a-marker>
 
+      <!-- Exercice 4 : marker personnalisé (fusée), fait apparaître un cône -->
+      <a-marker type="pattern" url="rocket-marker.patt">
+        <a-cone
+          position="0 0.75 0"
+          radius-bottom="0.6"
+          radius-top="0"
+          height="1.5"
+          color="#F72585"
+          animation="property: rotation; to: 0 360 0; loop: true; dur: 3000; easing: linear">
+        </a-cone>
+      </a-marker>
+
       <a-entity camera>
         <!-- Curseur : petit anneau au centre de l'écran qui sert de "viseur".
              raycaster cible les éléments avec la classe "clickable". -->
