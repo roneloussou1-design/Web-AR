@@ -1,69 +1,166 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <title>TP01 WebAR - Exercice 1</title>
-  <script src="https://cdn.jsdelivr.net/npm/aframe@1.5.0/dist/aframe-master.min.js"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>TP01 WebAR - Exercices 2 à 6</title>
+
+  <!-- A-Frame + AR.js -->
+  <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.5/aframe/build/aframe-ar.js"></script>
+
   <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
+    body { margin: 0; overflow: hidden; font-family: Arial, sans-serif; }
+
+    /* --- UI DOM overlay (Exercice 6) --- */
+    #ui-overlay {
+      display: none; /* masquée tant que le marker Hiro n'est pas détecté */
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.6);
+      padding: 15px 20px;
+      border-radius: 12px;
+      color: white;
+      z-index: 999;
+      text-align: center;
+      width: 260px;
     }
-    a-scene {
-      width: 100%;
-      height: 100%;
+    #ui-overlay label { display: block; margin-bottom: 6px; font-size: 14px; }
+    #size-slider { width: 100%; }
+    .color-swatches { display: flex; justify-content: center; gap: 10px; margin-top: 10px; }
+    .swatch {
+      width: 36px; height: 36px; border-radius: 50%;
+      border: 2px solid white; cursor: pointer;
     }
+    #swatch-red { background: red; }
+    #swatch-green { background: green; }
+    #swatch-blue { background: blue; }
   </style>
 </head>
 <body>
-  <a-scene id="mainScene" background="color: #ECECEC">
 
-    <!-- Plan de base -->
-    <a-plane
-      position="0 0 0"
-      rotation="-90 0 0"
-      width="20"
-      height="20"
-      color="#7BC8A4">
-    </a-plane>
+  <!-- ============ UI DOM overlay : Exercice 6 ============ -->
+  <div id="ui-overlay">
+    <label for="size-slider">Taille de la boîte</label>
+    <input type="range" id="size-slider" min="0.1" max="3.0" step="0.1" value="1">
 
-    <!-- Boite rouge -->
-    <a-box
-      position="-3 2 -3"
-      color="#E74C3C"
-      width="1.5" height="1.5" depth="1.5">
-    </a-box>
+    <div class="color-swatches">
+      <div class="swatch" id="swatch-red" data-color="red"></div>
+      <div class="swatch" id="swatch-green" data-color="green"></div>
+      <div class="swatch" id="swatch-blue" data-color="blue"></div>
+    </div>
+  </div>
 
-    <!-- Boite verte -->
-    <a-box
-      position="0 2 0"
-      color="#2ECC71"
-      width="1.5" height="1.5" depth="1.5">
-    </a-box>
+  <a-scene
+    vr-mode-ui="enabled: false"
+    embedded
+    arjs="sourceType: webcam; debugUIEnabled: false;"
+  >
 
-    <!-- Boite bleue -->
-    <a-box
-      position="3 2 3"
-      color="#3498DB"
-      width="1.5" height="1.5" depth="1.5">
-    </a-box>
+    <a-assets>
+      <!-- Exercice 4 : votre marker personnalisé, généré et téléchargé depuis le générateur AR.js -->
+      <!-- Placez le fichier pattern-custom.patt à la racine de votre repo -->
+    </a-assets>
 
-    <!-- Lumieres pour bien voir les couleurs -->
-    <a-light type="ambient" color="#FFFFFF" intensity="0.6"></a-light>
-    <a-light type="directional" color="#FFFFFF" intensity="0.8" position="2 4 2"></a-light>
+    <!-- ============ Exercice 2 + 3 + 6 : marker Hiro ============ -->
+    <a-marker preset="hiro" id="hiro-marker">
 
-    <!-- Camera : hauteur=10, distance=15 (sur l'axe Z uniquement), inclinaison calculee = -33.69deg -->
-    <a-entity
-      id="mainCamera"
-      position="0 10 15"
-      rotation="-33.69 0 0"
-      camera
-      wasd-controls>
+      <!-- Boîte semi-transparente qui tourne automatiquement (Exercice 2) -->
+      <!-- Personnalisation : matériau métallique/brillant + label avec le prénom -->
+      <!-- Elle réagit aussi au clic/tap (Exercice 3) et au slider/couleur (Exercice 6) -->
+      <a-box
+        id="ar-box"
+        position="0 0.5 0"
+        material="color: #6236FF; opacity: 0.75; metalness: 0.6; roughness: 0.25; transparent: true"
+        scale="1 1 1"
+        class="clickable"
+        animation="property: rotation; to: 0 360 0; loop: true; dur: 4000; easing: linear"
+      ></a-box>
+
+      <!-- Label personnalisé flottant au-dessus de la boîte -->
+      <a-text
+        value="Ronel"
+        position="0 1.3 0"
+        align="center"
+        color="#FFFFFF"
+        width="4"
+      ></a-text>
+
+    </a-marker>
+
+    <!-- ============ Exercice 4 : marker personnalisé ============ -->
+    <!-- Remplacez l'url par le chemin de votre fichier .patt -->
+    <a-marker type="pattern" url="pattern-custom.patt" id="custom-marker">
+      <!-- Objet 3D différent de la boîte : ici un cône -->
+      <a-cone
+        position="0 0.5 0"
+        radius-bottom="0.6"
+        radius-top="0"
+        height="1"
+        color="#FF9500"
+        animation="property: rotation; to: 0 360 0; loop: true; dur: 6000; easing: linear"
+      ></a-cone>
+    </a-marker>
+
+    <!-- Caméra AR + curseur pour l'interaction clic/tap (Exercice 3) -->
+    <a-entity camera>
+      <a-cursor
+        raycaster="objects: .clickable"
+        fuse="false"
+      ></a-cursor>
     </a-entity>
 
   </a-scene>
+
+  <script>
+    // ---------- Exercice 3 : interaction clic/tap ----------
+    const box = document.querySelector('#ar-box');
+    const colors = ['#4CC3D9', '#EF2D5E', '#FFC65D', '#7BC8A4'];
+    let colorIndex = 0;
+    let fastMode = false;
+
+    box.addEventListener('click', () => {
+      // Changement de couleur
+      colorIndex = (colorIndex + 1) % colors.length;
+      box.setAttribute('material', 'color', colors[colorIndex]);
+
+      // Animation supplémentaire : bascule vitesse de rotation + échelle
+      fastMode = !fastMode;
+      box.setAttribute('animation', {
+        property: 'rotation',
+        to: '0 360 0',
+        loop: true,
+        dur: fastMode ? 800 : 4000,
+        easing: 'linear'
+      });
+      box.setAttribute('scale', fastMode ? '1.4 1.4 1.4' : '1 1 1');
+    });
+
+    // ---------- Exercice 6 : UI DOM overlay ----------
+    const uiOverlay = document.querySelector('#ui-overlay');
+    const hiroMarker = document.querySelector('#hiro-marker');
+    const sizeSlider = document.querySelector('#size-slider');
+
+    hiroMarker.addEventListener('markerFound', () => {
+      uiOverlay.style.display = 'block';
+    });
+    hiroMarker.addEventListener('markerLost', () => {
+      uiOverlay.style.display = 'none';
+    });
+
+    sizeSlider.addEventListener('input', (e) => {
+      const size = e.target.value;
+      box.setAttribute('scale', `${size} ${size} ${size}`);
+    });
+
+    document.querySelectorAll('.swatch').forEach((swatch) => {
+      swatch.addEventListener('click', () => {
+        box.setAttribute('material', 'color', swatch.dataset.color);
+      });
+    });
+  </script>
+
 </body>
 </html>
