@@ -48,6 +48,37 @@
           });
         }
       });
+
+      // Exercice 6 : gestion de l'UI DOM overlay liée au marker Hiro
+      window.addEventListener('DOMContentLoaded', function () {
+        const marker = document.querySelector('#hiro-marker');
+        const ui = document.querySelector('#ui-overlay');
+        const box = document.querySelector('#interactive-box');
+        const slider = document.querySelector('#size-slider');
+        const sizeValueLabel = document.querySelector('#size-value');
+
+        // Afficher l'UI uniquement quand le marker Hiro est détecté
+        marker.addEventListener('markerFound', function () {
+          ui.classList.add('visible');
+        });
+        marker.addEventListener('markerLost', function () {
+          ui.classList.remove('visible');
+        });
+
+        // Slider : change la taille (échelle) de la boîte en temps réel
+        slider.addEventListener('input', function (evt) {
+          const value = parseFloat(evt.target.value);
+          box.setAttribute('scale', `${value} ${value} ${value}`);
+          sizeValueLabel.textContent = value.toFixed(1);
+        });
+
+        // Palette de couleurs : change immédiatement la couleur de la boîte
+        document.querySelectorAll('.color-swatch').forEach(function (swatch) {
+          swatch.addEventListener('click', function () {
+            box.setAttribute('color', swatch.dataset.color);
+          });
+        });
+      });
     </script>
     <style>
       .arjs-loader {
@@ -67,6 +98,54 @@
         font-size: 1.25em;
         color: white;
       }
+
+      /* Exercice 6 : UI DOM overlay */
+      #ui-overlay {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        box-sizing: border-box;
+        padding: 16px 20px 24px;
+        background: rgba(0, 0, 0, 0.55);
+        color: white;
+        font-family: sans-serif;
+        z-index: 10000;
+        /* Masquée par défaut, affichée seulement quand le marker Hiro est détecté */
+        display: none;
+      }
+      #ui-overlay.visible {
+        display: block;
+      }
+      #ui-overlay .row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 12px;
+      }
+      #ui-overlay .row:last-child {
+        margin-bottom: 0;
+      }
+      #ui-overlay label {
+        font-size: 0.9em;
+        min-width: 90px;
+      }
+      #size-slider {
+        flex: 1;
+      }
+      #size-value {
+        min-width: 30px;
+        text-align: right;
+        font-size: 0.9em;
+      }
+      .color-swatch {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        border: 2px solid white;
+        cursor: pointer;
+        padding: 0;
+      }
     </style>
   </head>
   <body style="margin: 0; overflow: hidden;">
@@ -82,7 +161,7 @@
       vr-mode-ui="enabled: false"
       renderer="logarithmicDepthBuffer: true;">
 
-      <a-marker preset="hiro">
+      <a-marker preset="hiro" id="hiro-marker">
         <!-- Boîte semi-transparente qui tourne automatiquement -->
         <a-box
           id="interactive-box"
@@ -120,6 +199,21 @@
       </a-entity>
 
     </a-scene>
+
+    <!-- Exercice 6 : UI DOM overlay, visible seulement quand le marker Hiro est détecté -->
+    <div id="ui-overlay">
+      <div class="row">
+        <label for="size-slider">Taille</label>
+        <input type="range" id="size-slider" min="0.1" max="3.0" step="0.1" value="1">
+        <span id="size-value">1.0</span>
+      </div>
+      <div class="row">
+        <label>Couleur</label>
+        <button class="color-swatch" style="background:#E63946" data-color="#E63946" aria-label="Rouge"></button>
+        <button class="color-swatch" style="background:#2A9D8F" data-color="#2A9D8F" aria-label="Vert"></button>
+        <button class="color-swatch" style="background:#264653" data-color="#264653" aria-label="Bleu"></button>
+      </div>
+    </div>
 
   </body>
 </html>
